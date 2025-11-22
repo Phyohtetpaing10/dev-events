@@ -53,32 +53,11 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching events by slug:", error);
-    }
+    // Log full error server-side for debugging
+    console.error("Error fetching events by slug:", error);
 
-    // Handle specific error types
-    if (error instanceof Error) {
-      // Handle database connection errors
-      if (error.message.includes("MONGODB_URI")) {
-        return NextResponse.json(
-          { message: "Database configuration error" },
-          { status: 500 }
-        );
-      }
-
-      // Return generic error with error message
-      return NextResponse.json(
-        { message: "Failed to fetch events", error: error.message },
-        { status: 500 }
-      );
-    }
-
-    // Handle unknown errors
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
+    // Return generic error response to client
+    // Never expose implementation details, environment variables, or error messages
+    return NextResponse.json({ message: "Database error" }, { status: 500 });
   }
 }
